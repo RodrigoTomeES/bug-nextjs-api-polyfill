@@ -1,0 +1,34 @@
+example:
+  component: '@sls-next/serverless-component@3.8.0-alpha.0'
+  enableHTTPCompression: true
+  minifyHandlers: true
+  inputs:
+    roleArn: ${env.LAMBDA_ROLE}
+    bucketName: ${env.BUCKET_NAME}
+    name:
+      defaultLambda: ${env.DEFAULT_LAMBDA}
+      apiLambda: ${env.API_LAMBDA}
+      imageLambda: ${env.IMAGE_LAMBDA}
+    runtime: nodejs18.x
+    timeout:
+      defaultLambda: 30
+      apiLambda: 30
+      imageLambda: 30
+      regenerationLambda: 30
+    cloudfront:
+      distributionId: ${env.DISTRIBUTION_ID}
+      defaults:
+        minTTL: 3000
+        forward:
+          headers: [Host]
+      api/*:
+        forward:
+          headers: [Authorization, Host, user-agent]
+    build:
+      env:
+        NODE_ENV: production
+        NEXT_MINIMIZE: true
+    removeOldLambdaVersions: true
+    publicDirectoryCache:
+      value: public, max-age=31536000
+      test: /\.(gif|jpe?g|png|txt|xml|woff|svg)$/i
